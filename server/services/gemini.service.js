@@ -60,6 +60,9 @@ Constraints:
 - Focus on Indian cities and Indian market context
 - Prices should reflect 2024–2025 Indian real estate market realities`;
 
+// Try models in order of preference
+const MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite'];
+
 let genAI = null;
 
 function getClient() {
@@ -72,42 +75,73 @@ function getClient() {
   return genAI;
 }
 
+// Retry wrapper — handles transient 429 / 503 errors
+async function withRetry(fn, retries = 2, delayMs = 15000) {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const isRetryable = err.status === 429 || err.status === 503;
+      if (isRetryable && i < retries) {
+        console.warn(`Gemini rate limit hit (attempt ${i + 1}/${retries}), waiting ${delayMs/1000}s...`);
+        await new Promise(r => setTimeout(r, delayMs));
+        delayMs = Math.min(delayMs * 2, 60000); // cap at 60s
+      } else {
+        console.error('Gemini error:', err.status, err.message?.substring(0, 120));
+        throw err;
+      }
+    }
+  }
+}
+
+// Try each model until one works
+async function getWorkingModel(client) {
+  for (const modelName of MODELS) {
+    try {
+      const model = client.getGenerativeModel({
+        model: modelName,
+        systemInstruction: SYSTEM_PROMPT,
+      });
+      return { model, modelName };
+    } catch (_) {
+      continue;
+    }
+  }
+  // Fall back to first
+  const model = client.getGenerativeModel({
+    model: MODELS[0],
+    systemInstruction: SYSTEM_PROMPT,
+  });
+  return { model, modelName: MODELS[0] };
+}
+
 /**
  * Send a message and get a response from Gemini
- * @param {Array} history - Previous messages [{role, parts: [{text}]}]
- * @param {string} userMessage - The new user message
- * @returns {Promise<string>} - AI response text
  */
 async function chat(history, userMessage) {
   const client = getClient();
-  const model = client.getGenerativeModel({
-    model: 'gemini-2.0-flash',
-    systemInstruction: SYSTEM_PROMPT,
-  });
+  const { model, modelName } = await getWorkingModel(client);
 
-  const chatSession = model.startChat({
-    history: history || [],
-    generationConfig: {
-      maxOutputTokens: 2048,
-      temperature: 0.7,
-    },
+  return await withRetry(async () => {
+    const chatSession = model.startChat({
+      history: history || [],
+      generationConfig: {
+        maxOutputTokens: 2048,
+        temperature: 0.7,
+      },
+    });
+    const result = await chatSession.sendMessage(userMessage);
+    console.log(`✅ Gemini response via ${modelName}`);
+    return result.response.text();
   });
-
-  const result = await chatSession.sendMessage(userMessage);
-  return result.response.text();
 }
 
 /**
  * Generate an investment recommendation report
- * @param {Object} inputs - { budget, city, goal, propertyType, additionalNotes }
- * @returns {Promise<string>} - AI report
  */
 async function generateRecommendation(inputs) {
   const client = getClient();
-  const model = client.getGenerativeModel({
-    model: 'gemini-2.0-flash',
-    systemInstruction: SYSTEM_PROMPT,
-  });
+  const { model, modelName } = await getWorkingModel(client);
 
   const prompt = `Generate a comprehensive investment recommendation report for the following client profile:
 
@@ -127,8 +161,11 @@ Please provide:
 
 Format your response with clear sections, bullet points, and emojis for readability.`;
 
-  const result = await model.generateContent(prompt);
-  return result.response.text();
+  return await withRetry(async () => {
+    const result = await model.generateContent(prompt);
+    console.log(`✅ Gemini recommendation via ${modelName}`);
+    return result.response.text();
+  });
 }
 
 module.exports = { chat, generateRecommendation };

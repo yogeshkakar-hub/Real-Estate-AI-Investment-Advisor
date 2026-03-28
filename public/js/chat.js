@@ -169,18 +169,44 @@ async function loadSessionMessages(sessionId) {
 function renderWelcomeChips() {
   const container = document.getElementById('chat-messages');
   const user = Auth.getUser();
+  const firstName = escapeHtml(user?.name?.split(' ')[0] || 'Investor');
+
   container.innerHTML = `
     <div class="chat-welcome">
-      <div class="welcome-icon">🏠</div>
-      <h2>Welcome back, ${escapeHtml(user?.name?.split(' ')[0] || 'Investor')}!</h2>
-      <p>I'm your AI Real Estate Advisor for Indian markets. Ask me anything about property investments.</p>
+      <div class="welcome-glow-ring">
+        <div class="welcome-icon">🏠</div>
+      </div>
+      <h2 class="welcome-title">Welcome back, <span class="welcome-name-highlight">${firstName}</span></h2>
+      <p>Your AI-powered real estate advisor for India's fastest-growing markets. Ask me anything about locations, ROI, or investment strategy.</p>
       <div class="quick-chips">
-        <button class="chip" data-msg="What are the best locations to invest ₹1 Cr in India right now?">💰 Best for ₹1 Cr budget</button>
-        <button class="chip" data-msg="Compare Noida Sector 150 vs Gurgaon Dwarka Expressway for investment">🏙️ Compare Noida vs Gurgaon</button>
-        <button class="chip" data-msg="Which city in India offers the highest rental yield in 2024-2025?">📈 Highest rental yield city</button>
-        <button class="chip" data-msg="Explain ROI in real estate investing with an Indian example">📚 Explain ROI simply</button>
-        <button class="chip" data-msg="Is Hyderabad HITECH City still a good investment in 2025?">🔥 Hyderabad investment outlook</button>
-        <button class="chip" data-msg="I have ₹50 Lakhs to invest in Indian real estate. What are my options?">🏡 Options for ₹50 Lakhs</button>
+        <button class="chip" data-msg="What are the best locations to invest ₹1 Cr in India right now? Compare top 3 areas with ROI estimates.">
+          <span class="chip-icon">💰</span>
+          <span class="chip-text">
+            <strong>₹1 Cr Investment</strong>
+            <span>Best locations right now</span>
+          </span>
+        </button>
+        <button class="chip" data-msg="Compare Noida Sector 150 vs Gurgaon Dwarka Expressway for real estate investment in 2025. Include ROI, rental yield and growth potential.">
+          <span class="chip-icon">⚖️</span>
+          <span class="chip-text">
+            <strong>Noida vs Gurgaon</strong>
+            <span>Side-by-side ROI comparison</span>
+          </span>
+        </button>
+        <button class="chip" data-msg="Which city in India offers the highest rental yield in 2024-2025? Give top 3 with specific areas and yield percentages.">
+          <span class="chip-icon">📈</span>
+          <span class="chip-text">
+            <strong>Highest Rental Yield</strong>
+            <span>Top cities ranked by yield</span>
+          </span>
+        </button>
+        <button class="chip" data-msg="Is Hyderabad HITECH City still a good investment in 2025? Analyze growth drivers, risks and expected returns.">
+          <span class="chip-icon">🔥</span>
+          <span class="chip-text">
+            <strong>Hyderabad Outlook</strong>
+            <span>HITECH City deep dive</span>
+          </span>
+        </button>
       </div>
     </div>
   `;
@@ -191,6 +217,7 @@ function renderWelcomeChips() {
     });
   });
 }
+
 
 function formatDate(dateStr) {
   const d = new Date(dateStr);
