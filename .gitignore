@@ -1,0 +1,52 @@
+# ─── Dependencies ───────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# ─── Environment / Secrets ──────────────────────────────
+.env
+.env.local
+.env.production
+.env.*.local
+
+# ─── Database ───────────────────────────────────────────
+advisor.db
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# ─── OS Files ───────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ─── Editor / IDE ───────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ─── Logs ───────────────────────────────────────────────
+logs/
+*.log
+
+# ─── Build / Temp ───────────────────────────────────────
+dist/
+build/
+tmp/
+.tmp/
+.cache/
+
+# ─── Internal AI tooling (not project files) ────────────
+walkthrough.md

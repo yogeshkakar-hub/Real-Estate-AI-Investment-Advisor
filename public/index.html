@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PropIQ — AI Real Estate Investment Advisor India</title>
+  <meta name="description" content="AI-powered real estate investment advisor for Indian property markets. Get personalized recommendations for Noida, Gurgaon, Mumbai, Bangalore, Hyderabad and more." />
+  <meta name="keywords" content="real estate investment India, property advisor AI, Noida investment, Gurgaon property, ROI rental yield India" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Marked.js for markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+
+<!-- Toast Notifications -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--                AUTH SCREEN                            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="auth-screen" class="auth-screen">
+  <div class="auth-bg-pattern"></div>
+  <div class="auth-container">
+    <div class="auth-brand">
+      <div class="auth-logo">🏠</div>
+      <h1 class="auth-title">PropIQ</h1>
+      <p class="auth-tagline">AI-Powered Real Estate Investment Advisor for India</p>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button id="auth-login-tab" class="auth-tab active">Sign In</button>
+        <button id="auth-register-tab" class="auth-tab">Create Account</button>
+      </div>
+
+      <p id="auth-error" class="auth-error"></p>
+
+      <!-- Login Form -->
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" placeholder="you@example.com" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Your password" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="hidden">
+        <div class="form-group">
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" placeholder="Your full name" required autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" placeholder="you@example.com" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" placeholder="Min 6 characters" required minlength="6" autocomplete="new-password" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+      </form>
+    </div>
+
+    <div class="auth-features">
+      <div class="auth-feature">🤖 AI-Powered Advice</div>
+      <div class="auth-feature">📊 8 Indian Cities</div>
+      <div class="auth-feature">💾 Saved History</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--                MAIN APP SCREEN                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="app-screen" class="app-screen hidden">
+
+  <!-- Sidebar Navigation -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <span class="brand-icon">🏠</span>
+        <span class="brand-name">PropIQ</span>
+      </div>
+      <button id="nav-toggle" class="nav-toggle" aria-label="Toggle menu">☰</button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-link active" data-page="chat" id="nav-chat">
+        <span class="nav-icon">💬</span>
+        <span class="nav-label">AI Advisor</span>
+      </a>
+      <a href="#" class="nav-link" data-page="dashboard" id="nav-dashboard">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Market Data</span>
+      </a>
+      <a href="#" class="nav-link" data-page="compare" id="nav-compare">
+        <span class="nav-icon">⚖️</span>
+        <span class="nav-label">Compare Cities</span>
+      </a>
+      <a href="#" class="nav-link" data-page="wizard" id="nav-wizard">
+        <span class="nav-icon">🧙</span>
+        <span class="nav-label">Investment Wizard</span>
+      </a>
+    </nav>
+
+    <!-- Chat Sessions (only visible on chat page implicitly via CSS) -->
+    <div class="sessions-section" id="sessions-section">
+      <div class="sessions-header">
+        <span>Recent Chats</span>
+        <button id="new-chat-btn" class="new-chat-btn" title="New chat">＋</button>
+      </div>
+      <div id="sessions-list" class="sessions-list">
+        <p class="no-sessions">No conversations yet.</p>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar-sm">👤</div>
+        <span id="nav-user-name">User</span>
+      </div>
+      <button id="logout-btn" class="logout-btn" title="Sign out">⎋</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ─── CHAT PAGE ─── -->
+    <div id="page-chat" class="page-panel active">
+      <div class="chat-layout">
+        <div class="chat-area">
+          <div id="chat-messages" class="chat-messages"></div>
+          <div class="chat-input-area">
+            <div class="chat-input-wrapper">
+              <textarea
+                id="chat-input"
+                class="chat-input"
+                placeholder="Ask about Indian real estate investments... (e.g. Best areas in Noida for ₹80L budget)"
+                rows="1"
+              ></textarea>
+              <button id="chat-send-btn" class="chat-send-btn" aria-label="Send message">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+              </button>
+            </div>
+            <p class="chat-disclaimer">PropIQ provides data-driven estimates. Always verify with a RERA-registered advisor.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── DASHBOARD PAGE ─── -->
+    <div id="page-dashboard" class="page-panel">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Market Overview</h1>
+          <p class="page-subtitle">Real estate data across top Indian investment destinations</p>
+        </div>
+      </div>
+
+      <div class="dashboard-filters">
+        <div class="filter-group">
+          <label for="city-search">🔍 Search City</label>
+          <input type="text" id="city-search" placeholder="e.g. Noida, Bangalore..." />
+        </div>
+        <div class="filter-group">
+          <label for="budget-filter">💰 Max Budget (₹ Cr)</label>
+          <select id="budget-filter">
+            <option value="">All Budgets</option>
+            <option value="0.8">Under ₹80 Lakhs</option>
+            <option value="1.2">Under ₹1.2 Cr</option>
+            <option value="1.8">Under ₹1.8 Cr</option>
+            <option value="2.5">Under ₹2.5 Cr</option>
+            <option value="100">No Limit</option>
+          </select>
+        </div>
+        <div class="sort-buttons">
+          <button class="sort-btn active" data-sort="demand">Top Demand</button>
+          <button class="sort-btn" data-sort="roi">Best ROI</button>
+          <button class="sort-btn" data-sort="yield">Best Yield</button>
+          <button class="sort-btn" data-sort="price-asc">Price ↑</button>
+        </div>
+      </div>
+
+      <div id="cities-grid" class="cities-grid"></div>
+    </div>
+
+    <!-- ─── COMPARE PAGE ─── -->
+    <div id="page-compare" class="page-panel">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Compare Cities</h1>
+          <p class="page-subtitle">Side-by-side comparison of Indian real estate markets</p>
+        </div>
+      </div>
+
+      <div class="compare-selectors">
+        <div class="selector-group">
+          <label>City 1</label>
+          <select id="compare-city-1"></select>
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="selector-group">
+          <label>City 2</label>
+          <select id="compare-city-2"></select>
+        </div>
+        <div class="selector-group">
+          <label>City 3 (Optional)</label>
+          <select id="compare-city-3"></select>
+        </div>
+        <button id="compare-btn" class="btn btn-primary">Compare Now</button>
+      </div>
+
+      <div id="comparison-result" class="comparison-result hidden">
+        <div id="comparison-table" class="comparison-table"></div>
+
+        <div class="infra-section">
+          <h3 class="section-sub-title">🏗️ Infrastructure Notes</h3>
+          <div id="infra-notes" class="infra-notes"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── WIZARD PAGE ─── -->
+    <div id="page-wizard" class="page-panel">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Investment Wizard</h1>
+          <p class="page-subtitle">Answer 4 quick questions and get a personalized AI investment report</p>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="wizard-progress-container">
+        <div class="wizard-progress-track">
+          <div id="wizard-progress-bar" class="wizard-progress-bar" style="width: 25%"></div>
+        </div>
+        <div class="wizard-steps-row">
+          <div class="wizard-step-indicator active" data-step="1">
+            <div class="step-circle">1</div>
+            <div class="step-label">Budget</div>
+          </div>
+          <div class="wizard-step-indicator" data-step="2">
+            <div class="step-circle">2</div>
+            <div class="step-label">Location</div>
+          </div>
+          <div class="wizard-step-indicator" data-step="3">
+            <div class="step-circle">3</div>
+            <div class="step-label">Goal</div>
+          </div>
+          <div class="wizard-step-indicator" data-step="4">
+            <div class="step-circle">4</div>
+            <div class="step-label">Property</div>
+          </div>
+        </div>
+      </div>
+
+      <form id="wizard-form" class="wizard-form" onsubmit="return false;">
+
+        <!-- Step 1: Budget -->
+        <div class="wizard-panel active" data-panel="1">
+          <div class="wizard-panel-title">💰 What is your investment budget?</div>
+          <div class="wizard-panel-sub">Be honest — this helps us find the most realistic options for you.</div>
+          <div class="budget-input-group">
+            <input type="number" id="w-budget" placeholder="e.g. 1.5" min="0.1" max="100" step="0.1" class="budget-input" />
+            <div class="budget-unit-selector">
+              <label class="radio-option">
+                <input type="radio" name="budget-unit" value="Cr" checked /> ₹ Crore
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="budget-unit" value="L" /> ₹ Lakhs
+              </label>
+            </div>
+          </div>
+          <div class="budget-hints">
+            <button type="button" class="hint-chip" onclick="document.getElementById('w-budget').value='50'; document.querySelector('input[value=L]').checked=true">₹50 Lakhs</button>
+            <button type="button" class="hint-chip" onclick="document.getElementById('w-budget').value='1'; document.querySelector('input[value=Cr]').checked=true">₹1 Crore</button>
+            <button type="button" class="hint-chip" onclick="document.getElementById('w-budget').value='2'; document.querySelector('input[value=Cr]').checked=true">₹2 Crore</button>
+            <button type="button" class="hint-chip" onclick="document.getElementById('w-budget').value='5'; document.querySelector('input[value=Cr]').checked=true">₹5 Crore</button>
+          </div>
+        </div>
+
+        <!-- Step 2: City -->
+        <div class="wizard-panel" data-panel="2">
+          <div class="wizard-panel-title">🏙️ Preferred city or region?</div>
+          <div class="wizard-panel-sub">Leave blank if you're open to the best option across India.</div>
+          <input type="text" id="w-city" placeholder="e.g. Noida, Bangalore, NCR, Mumbai..." class="text-input" />
+          <div class="city-quick-picks">
+            <span class="pick-label">Quick picks:</span>
+            <button type="button" class="hint-chip" onclick="document.getElementById('w-city').value='Noida'">Noida</button>
+            <button type="button" class="hint-chip" onclick="document.getElementById('w-city').value='Gurgaon'">Gurgaon</button>
+            <button type="button" class="hint-chip" onclick="document.getElementById('w-city').value='Mumbai'">Mumbai</button>
+            <button type="button" class="hint-chip" onclick="document.getElementById('w-city').value='Bangalore'">Bangalore</button>
+            <button type="button" class="hint-chip" onclick="document.getElementById('w-city').value='Hyderabad'">Hyderabad</button>
+            <button type="button" class="hint-chip" onclick="document.getElementById('w-city').value='Pune'">Pune</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Goal -->
+        <div class="wizard-panel" data-panel="3">
+          <div class="wizard-panel-title">🎯 What is your investment goal?</div>
+          <div class="wizard-panel-sub">This determines whether we prioritize yield, appreciation, or stability.</div>
+          <div class="goal-options">
+            <label class="goal-card">
+              <input type="radio" name="inv-goal" value="Rental income — I want monthly passive income" />
+              <div class="goal-card-content">
+                <div class="goal-icon">🏠</div>
+                <div class="goal-title">Rental Income</div>
+                <div class="goal-desc">Monthly passive income through tenants</div>
+              </div>
+            </label>
+            <label class="goal-card">
+              <input type="radio" name="inv-goal" value="Long-term capital appreciation — I want my property value to grow over 5–10 years" />
+              <div class="goal-card-content">
+                <div class="goal-icon">📈</div>
+                <div class="goal-title">Capital Appreciation</div>
+                <div class="goal-desc">Property value growth over 5–10 years</div>
+              </div>
+            </label>
+            <label class="goal-card">
+              <input type="radio" name="inv-goal" value="Self-use — I plan to live in the property eventually but want good appreciation too" />
+              <div class="goal-card-content">
+                <div class="goal-icon">🏡</div>
+                <div class="goal-title">Self-Use</div>
+                <div class="goal-desc">Live in it, but also want ROI</div>
+              </div>
+            </label>
+            <label class="goal-card">
+              <input type="radio" name="inv-goal" value="High-risk high-return — I want aggressive growth, willing to take risk for maximum returns" />
+              <div class="goal-card-content">
+                <div class="goal-icon">🚀</div>
+                <div class="goal-title">High-Risk / High-Return</div>
+                <div class="goal-desc">Maximum returns, aggressive growth</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Step 4: Property Type -->
+        <div class="wizard-panel" data-panel="4">
+          <div class="wizard-panel-title">🏗️ What type of property?</div>
+          <div class="wizard-panel-sub">Your preference shapes which markets and builders we can recommend.</div>
+          <div class="type-options">
+            <label class="type-card">
+              <input type="radio" name="prop-type" value="Flat / Apartment" />
+              <div class="type-card-content">
+                <div class="type-icon">🏢</div>
+                <div class="type-label">Flat / Apartment</div>
+              </div>
+            </label>
+            <label class="type-card">
+              <input type="radio" name="prop-type" value="Villa / Independent House" />
+              <div class="type-card-content">
+                <div class="type-icon">🏠</div>
+                <div class="type-label">Villa / House</div>
+              </div>
+            </label>
+            <label class="type-card">
+              <input type="radio" name="prop-type" value="Plot / Land" />
+              <div class="type-card-content">
+                <div class="type-icon">🌿</div>
+                <div class="type-label">Plot / Land</div>
+              </div>
+            </label>
+            <label class="type-card">
+              <input type="radio" name="prop-type" value="Commercial Property / Shop / Office" />
+              <div class="type-card-content">
+                <div class="type-icon">🏪</div>
+                <div class="type-label">Commercial</div>
+              </div>
+            </label>
+          </div>
+          <div class="form-group" style="margin-top: 1.5rem">
+            <label for="w-notes">Any additional notes? (optional)</label>
+            <textarea id="w-notes" placeholder="e.g. Looking for RERA certified projects only, prefer ready-to-move..." rows="3" class="text-input"></textarea>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- Wizard Navigation -->
+      <div class="wizard-nav">
+        <button id="wizard-prev-btn" class="btn btn-secondary" style="visibility: hidden">← Back</button>
+        <button id="wizard-next-btn" class="btn btn-primary">Next →</button>
+      </div>
+
+      <!-- AI Report Output -->
+      <div id="wizard-result" class="wizard-result hidden">
+        <div class="result-header">
+          <h2>📋 Your Investment Report</h2>
+          <p>Generated by PropIQ AI based on your profile</p>
+        </div>
+        <div id="wizard-report" class="wizard-report"></div>
+        <div id="wizard-action-btns" class="wizard-action-btns hidden">
+          <button id="wizard-copy-btn" class="btn btn-secondary">📋 Copy Report</button>
+          <button id="wizard-restart-btn" class="btn btn-outline">🔄 Start Over</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- JS — load in correct order -->
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/chat.js"></script>
+<script src="/js/dashboard.js"></script>
+<script src="/js/compare.js"></script>
+<script src="/js/wizard.js"></script>
+<script src="/js/app.js"></script>
+
+</body>
+</html>
