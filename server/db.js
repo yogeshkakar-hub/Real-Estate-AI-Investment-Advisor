@@ -1,7 +1,17 @@
 const knex = require('knex');
 const path = require('path');
+const fs = require('fs');
 
-const DB_PATH = path.join(__dirname, '..', 'advisor.db');
+// In production (Render), store DB on persistent disk to survive redeploys.
+// In development, store in the project root.
+const DATA_DIR = process.env.NODE_ENV === 'production'
+  ? '/opt/render/project/data'
+  : path.join(__dirname, '..');
+
+// Ensure the data directory exists (important on first Render deploy)
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+
+const DB_PATH = path.join(DATA_DIR, 'advisor.db');
 
 const db = knex({
   client: 'sqlite3',

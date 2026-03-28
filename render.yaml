@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: propiq-ai-advisor
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/market/cities
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: GEMINI_API_KEY
+        sync: false   # Set this manually in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true   # Render auto-generates a secure random value
+    disk:
+      name: propiq-data
+      mountPath: /opt/render/project/data
+      sizeGB: 1
