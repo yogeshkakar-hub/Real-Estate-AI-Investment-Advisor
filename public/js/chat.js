@@ -173,34 +173,34 @@ function renderWelcomeChips() {
 
   container.innerHTML = `
     <div class="chat-welcome">
-      <div class="welcome-glow-ring">
+      <div class="welcome-glow-ring anim-fade-up anim-delay-1">
         <div class="welcome-icon">🏠</div>
       </div>
-      <h2 class="welcome-title">Welcome back, <span class="welcome-name-highlight">${firstName}</span></h2>
-      <p>Your AI-powered real estate advisor for India's fastest-growing markets. Ask me anything about locations, ROI, or investment strategy.</p>
+      <h2 class="welcome-title anim-fade-up anim-delay-2">Welcome back, <span class="welcome-name-highlight">${firstName}</span></h2>
+      <p class="anim-fade-up anim-delay-3">Your AI-powered real estate advisor for India's fastest-growing markets. Ask me anything about locations, ROI, or investment strategy.</p>
       <div class="quick-chips">
-        <button class="chip" data-msg="What are the best locations to invest ₹1 Cr in India right now? Compare top 3 areas with ROI estimates.">
+        <button class="chip anim-fade-up anim-delay-3" data-msg="What are the best locations to invest ₹1 Cr in India right now? Compare top 3 areas with ROI estimates.">
           <span class="chip-icon">💰</span>
           <span class="chip-text">
             <strong>₹1 Cr Investment</strong>
             <span>Best locations right now</span>
           </span>
         </button>
-        <button class="chip" data-msg="Compare Noida Sector 150 vs Gurgaon Dwarka Expressway for real estate investment in 2025. Include ROI, rental yield and growth potential.">
+        <button class="chip anim-fade-up anim-delay-4" data-msg="Compare Noida Sector 150 vs Gurgaon Dwarka Expressway for real estate investment in 2025. Include ROI, rental yield and growth potential.">
           <span class="chip-icon">⚖️</span>
           <span class="chip-text">
             <strong>Noida vs Gurgaon</strong>
             <span>Side-by-side ROI comparison</span>
           </span>
         </button>
-        <button class="chip" data-msg="Which city in India offers the highest rental yield in 2024-2025? Give top 3 with specific areas and yield percentages.">
+        <button class="chip anim-fade-up anim-delay-5" data-msg="Which city in India offers the highest rental yield in 2024-2025? Give top 3 with specific areas and yield percentages.">
           <span class="chip-icon">📈</span>
           <span class="chip-text">
             <strong>Highest Rental Yield</strong>
             <span>Top cities ranked by yield</span>
           </span>
         </button>
-        <button class="chip" data-msg="Is Hyderabad HITECH City still a good investment in 2025? Analyze growth drivers, risks and expected returns.">
+        <button class="chip anim-fade-up anim-delay-6" data-msg="Is Hyderabad HITECH City still a good investment in 2025? Analyze growth drivers, risks and expected returns.">
           <span class="chip-icon">🔥</span>
           <span class="chip-text">
             <strong>Hyderabad Outlook</strong>

@@ -384,6 +384,11 @@ select option { background: var(--surface); }
   flex-direction: column;
   overflow: hidden;
   z-index: 100;
+  /* 3D depth: sidebar casts layered shadow onto main canvas */
+  box-shadow:
+    4px 0 20px rgba(0, 0, 0, 0.25),
+    8px 0 48px rgba(0, 0, 0, 0.12),
+    1px 0 0 var(--sidebar-border);
   transition: transform var(--transition), background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -1034,6 +1039,17 @@ select option { background: var(--surface); }
 }
 
 /* City Cards Grid */
+/* ─── Tactile button press state for ALL nav + buttons ─── */
+.nav-link:active {
+  transform: scale(0.96) !important;
+  transition: transform 80ms ease !important;
+}
+
+.btn:active, .sort-btn:active, .hint-chip:active, .chip:active {
+  transform: scale(0.96) translateY(1px) !important;
+  transition: transform 80ms ease !important;
+}
+
 .cities-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -1046,9 +1062,12 @@ select option { background: var(--surface); }
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   padding: 1.4rem;
-  transition: all var(--transition);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
   position: relative;
   overflow: hidden;
+  transform: translateY(0);
+  /* subtle resting depth */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .city-card::before {
@@ -1065,9 +1084,15 @@ select option { background: var(--surface); }
 
 .city-card:hover {
   border-color: var(--gold-border);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow);
+  transform: translateY(-4px);
+  /* wider, softer shadow to simulate rising */
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.22),
+    0 4px 12px rgba(0, 0, 0, 0.12),
+    0 0 0 1px var(--gold-border);
 }
+
+.city-card:active { transform: translateY(-2px); }
 
 .city-card:hover::before { opacity: 1; }
 
@@ -1789,6 +1814,74 @@ select option { background: var(--surface); }
 /* Swap opacity when dark is active */
 [data-theme='dark'] .sun-icon  { opacity: 0.35; }
 [data-theme='dark'] .moon-icon { opacity: 1; }
+
+/* 3D Neumorphic toggle track — inset into sidebar */
+.toggle-track {
+  box-shadow:
+    inset 2px 2px 6px rgba(0, 0, 0, 0.30),
+    inset -1px -1px 3px rgba(255, 255, 255, 0.04);
+}
+
+/* 3D popping thumb — light mode (gold sun) */
+.toggle-thumb {
+  box-shadow:
+    2px 2px 6px rgba(0, 0, 0, 0.35),
+    -1px -1px 3px rgba(255, 255, 255, 0.10),
+    0 4px 14px var(--gold-glow);
+}
+
+/* 3D popping thumb — dark mode (blue moon) */
+[data-theme='dark'] .toggle-thumb {
+  box-shadow:
+    2px 2px 6px rgba(0, 0, 0, 0.50),
+    -1px -1px 3px rgba(255, 255, 255, 0.06),
+    0 4px 14px hsla(214, 90%, 74%, 0.60);
+}
+
+/* Light mode: softer inset (lighter bg, less contrast needed) */
+:root:not([data-theme='dark']) .toggle-track {
+  box-shadow:
+    inset 3px 3px 7px rgba(0, 0, 0, 0.12),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.80);
+}
+
+:root:not([data-theme='dark']) .toggle-thumb {
+  box-shadow:
+    3px 3px 7px rgba(0, 0, 0, 0.15),
+    -2px -2px 5px rgba(255, 255, 255, 0.70),
+    0 4px 12px var(--gold-glow);
+}
+
+/* Send button active press */
+.chat-send-btn:active {
+  transform: scale(0.92) !important;
+  box-shadow: 0 1px 4px var(--gold-glow) !important;
+  transition: transform 80ms ease, box-shadow 80ms ease !important;
+}
+
+/* ─── Fade-Up-Tilt entrance animation ─── */
+@keyframes fadeUpTilt {
+  from {
+    opacity: 0;
+    transform: perspective(500px) translateY(15px) rotateX(8deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(500px) translateY(0) rotateX(0deg);
+  }
+}
+
+.anim-fade-up {
+  animation: fadeUpTilt 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Stagger delays for sequential entrance */
+.anim-delay-1 { animation-delay: 0.05s; }
+.anim-delay-2 { animation-delay: 0.12s; }
+.anim-delay-3 { animation-delay: 0.19s; }
+.anim-delay-4 { animation-delay: 0.26s; }
+.anim-delay-5 { animation-delay: 0.33s; }
+.anim-delay-6 { animation-delay: 0.40s; }
 
 /* ════════════════════════════════════════════
    RESPONSIVE
